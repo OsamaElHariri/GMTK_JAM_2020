@@ -10,9 +10,15 @@ export class Rock extends Phaser.GameObjects.Sprite {
 
     private counter = 0;
 
+    body: Phaser.Physics.Arcade.Body;
+
     constructor(public world: World, public x: number, public y: number, private force: Force) {
         super(world.scene, x, y, 'rock1');
         world.scene.addObject(this);
+        world.scene.physics.world.enable(this);
+        this.body.setAllowGravity(false);
+        this.body.setImmovable(true);
+
         this.setDepth(10);
 
         this.rangeIndicatorRipple = this.scene.add.sprite(x, y, 'rock_ripple')
@@ -75,7 +81,7 @@ export class Rock extends Phaser.GameObjects.Sprite {
             } else if (Math.abs(sway.maxScale) > Math.abs(sway.minScale) && swayLength > 0) {
                 multiplier = 0.1;
             }
-            
+
             this.forceIndicatorRipple.setScale(this.forceIndicatorRipple.scaleX + 0.0005 * Math.sign(swayLength) * multiplier);
         }
 

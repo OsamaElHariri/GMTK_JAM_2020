@@ -10,7 +10,7 @@ export class Player extends Actor {
     private oarRotationStrengthIncrement = 0.01;
 
     private boostTimeThreshold = 200;
-    private boostAmount = 90;
+    private boostAmount = 60;
     private boostTime = 300;
 
     private horizontalBoostVal = 0;
@@ -109,7 +109,7 @@ export class Player extends Actor {
                 initialRotation
                 + Math.sign(oar.rotation)
                 * oarRotationStrength
-                * Math.sin((this.counter + index * 5) / 20)
+                * Math.sin((this.counter + index * 6) / 20)
                 * Math.PI / 6)
         });
     }

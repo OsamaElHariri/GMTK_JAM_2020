@@ -76,11 +76,6 @@ export class InputKeys {
         let axis: number = 0;
         let up = this.upPressed();
         let down = this.downPressed();
-        if (up && down) {
-            let upPressedLast = this.up.lastTimeJustPressed > this.down.lastTimeJustPressed;
-            up = upPressedLast;
-            down = !upPressedLast;
-        }
 
         if (up) axis -= 1;
         if (down) axis += 1;
@@ -91,11 +86,6 @@ export class InputKeys {
         let axis: number = 0;
         let left = this.leftPressed();
         let right = this.rightPressed();
-        if (left && right) {
-            let leftPressedLast = this.left.lastTimeJustPressed > this.right.lastTimeJustPressed;
-            left = leftPressedLast;
-            right = !leftPressedLast;
-        }
 
         if (left) axis -= 1;
         if (right) axis += 1;
