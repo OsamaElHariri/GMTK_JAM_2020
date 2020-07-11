@@ -9,6 +9,17 @@ export class Player extends Actor {
     private oarRotationStrength = 0;
     private oarRotationStrengthIncrement = 0.01;
 
+    private boostTimeThreshold = 200;
+    private boostAmount = 90;
+    private boostTime = 300;
+
+    private horizontalBoostVal = 0;
+    private horizontalBoostTime = 0;
+    private horizontalBoostUntil = 0;
+    private verticalBoostVal = 0;
+    private verticalBoostTime = 0;
+    private verticalBoostUntil = 0;
+
     constructor(public world: World, public x: number, public y: number) {
         super(world, x, y);
 
@@ -56,21 +67,75 @@ export class Player extends Actor {
         super.update(time, delta);
         this.counter += 1;
 
-        if (this.moveEngine.getHorizontalAxis() !== 0 || this.moveEngine.getVerticalAxis() !== 0) {
+        const verticalEngineBoost = this.moveEngine.getVerticalAxisJustPressed();
+        if (verticalEngineBoost) {
+
+            if (this.verticalBoostVal === verticalEngineBoost && Date.now() - this.verticalBoostTime < this.boostTimeThreshold) {
+                this.verticalBoostUntil = Date.now() + this.boostTime;
+            } else {
+                this.verticalBoostUntil = 0;
+                this.verticalBoostVal = verticalEngineBoost;
+            }
+            this.verticalBoostTime = Date.now();
+        }
+
+        const horizontalEngineBoost = this.moveEngine.getHorizontalAxisJustPressed();
+        if (horizontalEngineBoost) {
+
+            if (this.horizontalBoostVal === horizontalEngineBoost && Date.now() - this.horizontalBoostTime < this.boostTimeThreshold) {
+                this.horizontalBoostUntil = Date.now() + this.boostTime;
+            } else {
+                this.horizontalBoostUntil = 0;
+                this.horizontalBoostVal = horizontalEngineBoost;
+            }
+            this.horizontalBoostTime = Date.now();
+        }
+
+        const hasBoost = this.hasVerticalBoost() || this.hasHorizontalBoost();
+        if (this.moveEngine.getHorizontalAxis() !== 0
+            || this.moveEngine.getVerticalAxis() !== 0
+            || hasBoost) {
             if (this.oarRotationStrength < 1) this.oarRotationStrength += this.oarRotationStrengthIncrement;
         } else {
             if (this.oarRotationStrength > 0.1) this.oarRotationStrength -= this.oarRotationStrengthIncrement;
         }
         this.oarRotationStrength = NumberUtils.clamp(0.1, 1, this.oarRotationStrength);
+        let oarRotationStrength = this.oarRotationStrength;
 
+        if (hasBoost) this.counter += 3;
         this.oars.forEach((oar, index) => {
             const initialRotation = Math.sign(oar.rotation) * Math.PI / 2;
             oar.setRotation(
                 initialRotation
                 + Math.sign(oar.rotation)
-                * this.oarRotationStrength
+                * oarRotationStrength
                 * Math.sin((this.counter + index * 5) / 20)
                 * Math.PI / 6)
         });
+    }
+
+    protected getMoveVector() {
+        const moveVector = new Phaser.Math.Vector2(this.moveEngine.getHorizontalAxis(), this.moveEngine.getVerticalAxis());
+        if (this.hasVerticalBoost()) {
+            moveVector.y = this.verticalBoostVal;
+        }
+        if (this.hasHorizontalBoost()) {
+            moveVector.x = this.horizontalBoostVal;
+        }
+        return moveVector.normalize().scale(this.speed);
+    }
+
+    setBodyVelocity(x: number, y: number) {
+        if (this.hasVerticalBoost()) y += this.boostAmount * this.verticalBoostVal;
+        if (this.hasHorizontalBoost()) x += this.boostAmount * this.horizontalBoostVal;
+        super.setBodyVelocity(x, y);
+    }
+
+    hasVerticalBoost() {
+        return Date.now() < this.verticalBoostUntil;
+    }
+
+    hasHorizontalBoost() {
+        return Date.now() < this.horizontalBoostUntil;
     }
 }

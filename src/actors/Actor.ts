@@ -46,9 +46,8 @@ export class Actor extends Phaser.GameObjects.Ellipse {
             moveVector.add(force);
         });
 
-        this.body.setVelocity(moveVector.x, moveVector.y);
-
         this.mainContainer.setPosition(this.x, this.y);
+        this.setBodyVelocity(moveVector.x, moveVector.y);
 
         const thetaDiff = CircleUtils.rotationTowardsTargetTheta(this.mainContainer.rotation, this.facingRotation);
         this.mainContainer.rotation += 0.05 * thetaDiff;
@@ -58,6 +57,10 @@ export class Actor extends Phaser.GameObjects.Ellipse {
             const radians = Math.atan2(velocity.y, velocity.x) + Math.PI / 2;
             this.faceMoveDirection(radians);
         }
+    }
+
+    setBodyVelocity(x: number, y: number) {
+        this.body.setVelocity(x, y);
     }
 
     protected faceMoveDirection(rotation: number) {

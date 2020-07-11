@@ -102,6 +102,18 @@ export class InputKeys {
         return axis;
     }
 
+    getVerticalAxisJustPressed(): number {
+        if (this.upJustPressed()) return -1;
+        else if (this.downJustPressed()) return 1;
+        else return 0;
+    }
+
+    getHorizontalAxisJustPressed(): number {
+        if (this.leftJustPressed()) return -1;
+        else if (this.rightJustPressed()) return 1;
+        else return 0;
+    }
+
     upPressed(): boolean {
         return this.checkKeyGroupPressed(this.up);
     }
@@ -134,31 +146,11 @@ export class InputKeys {
         return this.checkKeyGroupJustPressed(this.left);
     }
 
-    upJustDoubleTapped(): boolean {
-        return this.checkKeyGroupJustDoubleTapped(this.up);
-    }
-
-    downJustDoubleTapped(): boolean {
-        return this.checkKeyGroupJustDoubleTapped(this.down);
-    }
-
-    rightJustDoubleTapped(): boolean {
-        return this.checkKeyGroupJustDoubleTapped(this.right);
-    }
-
-    leftJustDoubleTapped(): boolean {
-        return this.checkKeyGroupJustDoubleTapped(this.left);
-    }
-
     private checkKeyGroupPressed(keyGroup: KeyGroup): boolean {
-        return !this.isDisabled && keyGroup.hasKeyDown(this.keyboard.game.getFrame());
+        return !this.isDisabled && keyGroup.hasKeyDown();
     }
 
     private checkKeyGroupJustPressed(keyGroup: KeyGroup): boolean {
-        return !this.isDisabled && keyGroup.hasKeyJustPressed(this.keyboard.game.getFrame());
-    }
-
-    private checkKeyGroupJustDoubleTapped(keyGroup: KeyGroup): boolean {
-        return !this.isDisabled && keyGroup.hasKeyJustDoubleTapped(this.keyboard.game.getFrame());
+        return !this.isDisabled && keyGroup.hasKeyJustPressed();
     }
 }

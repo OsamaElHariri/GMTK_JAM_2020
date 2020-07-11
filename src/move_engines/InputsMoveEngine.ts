@@ -11,4 +11,12 @@ export class InputsMoveEngine implements MoveEngine {
     getVerticalAxis(): number {
         return this.keys.getVerticalAxis();
     }
+
+    getHorizontalAxisJustPressed(): number {
+        return this.keys.getHorizontalAxisJustPressed();
+    }
+
+    getVerticalAxisJustPressed(): number {
+        return this.keys.getVerticalAxisJustPressed();
+    }
 }
