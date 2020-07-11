@@ -1,0 +1,23 @@
+{
+    "name": "spirit_chain_roguelite",
+    "version": "1.0.0",
+    "description": "Awesome roguelite written in TypeScript using Phaser",
+    "main": "index.html",
+    "scripts": {
+        "dev": "parcel index.html",
+        "build": "parcel build index.html --out-dir build",
+        "copyAssets": "cpx \"src/assets/**\" \"dist/assets\" && cpx \"src/dom_html/**\" \"dist/dom_html\"",
+        "copyAssetsBuild": "cpx \"src/assets/**\" \"build/assets\" && cpx \"src/dom_html/**\" \"build/dom_html\""
+    },
+    "author": "Osama El Hariri",
+    "license": "MIT",
+    "dependencies": {
+        "parcel": "^1.12.4",
+        "phaser": "^3.22.0"
+    },
+    "devDependencies": {
+        "cpx": "^1.5.0",
+        "ts-node": "^8.6.2",
+        "typescript": "^3.7.5"
+    }
+}
