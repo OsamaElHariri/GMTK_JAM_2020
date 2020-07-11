@@ -20,6 +20,7 @@ export class LoadingScene extends Scene {
         this.load.image('rock1', '../assets/sprites/rock1.png');
         this.load.image('rain_particle', '../assets/sprites/rain_particle.png');
         this.load.image('rain_particles', '../assets/sprites/rain_particles.png');
+        this.load.image('rock_ripple', '../assets/sprites/rock_ripple.png');
     }
 
     private constructLoadingScrean(): void {

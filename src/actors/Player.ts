@@ -5,7 +5,7 @@ import { NumberUtils } from "../utils/NumberUtils";
 export class Player extends Actor {
     private counter = 0;
     private oars: Phaser.GameObjects.Sprite[] = [];
-    private spriteScale = 0.3;
+    private spriteScale = 0.25;
     private oarRotationStrength = 0;
     private oarRotationStrengthIncrement = 0.01;
 

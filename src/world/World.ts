@@ -6,7 +6,7 @@ import { Sway } from "../vector_source/Sway";
 import { LinearVectorSource } from "../vector_source/LinearVectorSource";
 import { RadialVectorSource } from "../vector_source/RadialVectorSource";
 import { Player } from "../actors/Player";
-import { NumberUtils } from "../utils/NumberUtils";
+import { Rock } from "../environment/Rock";
 
 
 export class World extends Phaser.GameObjects.Container {
@@ -37,14 +37,16 @@ export class World extends Phaser.GameObjects.Container {
             source: new LinearVectorSource(new Phaser.Math.Vector2(200, 200))
         };
 
-        this.forces
-            .add({
-                sway: new Sway(150, -0.5, 2, 0.007),
-                source: new RadialVectorSource(new Phaser.Math.Vector2(200, 200), 400)
-            })
-            .add(this.windForce);
+        const rockForce = {
+            sway: new Sway(150, -0.5, 2, 0.007),
+            source: new RadialVectorSource(new Phaser.Math.Vector2(200, 200), 100)
+        };
 
-        this.scene.add.sprite(200, 200, 'rock1').setScale(0.5);
+        this.forces
+            .add(this.windForce)
+            .add(rockForce);
+
+        new Rock(this, 200, 200, rockForce).setRockScale(0.2);
 
         scene.addObject(player);
         this.rainSprite = this.scene.add.

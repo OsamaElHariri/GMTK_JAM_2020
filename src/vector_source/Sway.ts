@@ -13,9 +13,13 @@ export class Sway {
         this.ratio = NumberUtils.clamp(this.ratio + this.ratioIncrement * this.incrementDirection, 0, 1);
     }
 
-    getLength() {
+    getRatio() {
         return NumberUtils.map(this.minScale, this.maxScale,
             Phaser.Math.Easing.Quadratic.InOut(this.ratio)
-        ) * this.baseLength;
+        );
+    }
+
+    getLength() {
+        return this.getRatio() * this.baseLength;
     }
 }
