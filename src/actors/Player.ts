@@ -1,6 +1,7 @@
 import { World } from "../world/World";
 import { Actor } from "./Actor";
 import { NumberUtils } from "../utils/NumberUtils";
+import { Interval } from "../utils/interval";
 
 export class Player extends Actor {
     private counter = 0;
@@ -32,6 +33,42 @@ export class Player extends Actor {
                 .setOrigin(0.5)
                 .setScale(this.spriteScale),
         ]);
+        this.spawnBoatRipples();
+    }
+
+    async spawnBoatRipples() {
+        if (!this.active) return;
+        await Interval.milliseconds(150);
+        if (!this.active) return;
+        const ripple = this.scene.add.sprite(0, 0, 'boat_ripple');
+
+        const container = this.scene.add.container(this.x, this.y, [ripple])
+            .setRotation(this.body.velocity.angle() + Math.PI / 2)
+            .setScale(Math.random() < 0.5 ? 1 : -1, 1);
+        this.scene.add.tween({
+            targets: [ripple],
+            duration: 800,
+            y: {
+                getStart: () => 0,
+                getEnd: () => 100,
+            },
+            scaleX: {
+                getStart: () => 0.1,
+                getEnd: () => 0.6,
+            },
+            scaleY: {
+                getStart: () => 0.1,
+                getEnd: () => 0.6,
+            },
+            alpha: {
+                getStart: () => 0.6,
+                getEnd: () => 0,
+            },
+            onComplete: () => {
+                if (this.active && container.active) container.removeAll(true).destroy();
+            }
+        });
+        this.spawnBoatRipples();
     }
 
     getOars() {

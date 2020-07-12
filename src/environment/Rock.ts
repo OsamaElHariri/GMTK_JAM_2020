@@ -43,13 +43,16 @@ export class Rock extends Phaser.GameObjects.Sprite {
 
         this.forceIndicatorRipple = this.scene.add.sprite(x, y, 'rock_ripple')
             .setTint(0xa8dcda)
-            .setAlpha(0.3);
+            .setAlpha(0.3)
+            .setDepth(1);
 
         this.rockRipple = this.scene.add.sprite(x, y, 'rock_ripple')
             .setTint(0xeffffe)
-            .setAlpha(0.6);
+            .setAlpha(0.6)
+            .setDepth(1);
         this.rockRipple
-            .setScale(this.width / this.rockRipple.width);
+            .setScale(this.width / this.rockRipple.width)
+            .setDepth(1);
 
     }
 
