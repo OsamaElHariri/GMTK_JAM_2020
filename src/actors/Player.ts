@@ -11,7 +11,7 @@ export class Player extends Actor {
     private oarRotationStrengthIncrement = 0.01;
 
     private boostTimeThreshold = 200;
-    private boostAmount = 60;
+    private boostAmount = 50;
     private boostTime = 300;
 
     private horizontalBoostVal = 0;
@@ -140,7 +140,7 @@ export class Player extends Actor {
         this.oarRotationStrength = NumberUtils.clamp(0.1, 1, this.oarRotationStrength);
         let oarRotationStrength = this.oarRotationStrength;
 
-        if (hasBoost) this.counter += 3;
+        if (hasBoost) this.counter += 4;
         this.oars.forEach((oar, index) => {
             const initialRotation = Math.sign(oar.rotation) * Math.PI / 2;
             oar.setRotation(

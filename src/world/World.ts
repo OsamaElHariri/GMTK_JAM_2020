@@ -43,13 +43,17 @@ export class World extends Phaser.GameObjects.Container {
     leftRockBarrier: Phaser.GameObjects.TileSprite;
     rightRockBarrier: Phaser.GameObjects.TileSprite;
 
+    canSpawnWaves = true;
+    spawningWaves = false;
+
     constructor(public scene: MainScene) {
         super(scene);
         this.id = scene.addObject(this);
         World.worldCount += 1;
         this.registerListeners();
         this.player = new Player(this, 400, 400).moveWith(new InputsMoveEngine());
-        this.scene.cameras.main.startFollow(this.player, true, 0.6);
+        // this.player = new Player(this, 400, -4000).moveWith(new InputsMoveEngine());
+        this.scene.cameras.main.startFollow(this.player, true, 0.6, 0.6, 0, 150);
         this.player.forces = this.forces;
         this.thunderScreen = this.scene.add.sprite(0, 0, 'thunder_screen')
             .setAlpha(0)
@@ -58,7 +62,7 @@ export class World extends Phaser.GameObjects.Container {
         this.createThunder()
 
         this.windForce = {
-            sway: new Sway(180, -1, 1, 0.005),
+            sway: new Sway(150, -1, 1, 0.005),
             source: new LinearVectorSource(new Phaser.Math.Vector2(1, 0))
         };
 
@@ -130,23 +134,169 @@ export class World extends Phaser.GameObjects.Container {
             0xff77aa,
             0.2)
             .setOrigin(0);
-
-        this.createBigWave();
     }
 
     createRockForces() {
         return [
+            // introductory rocks
             {
-                sway: new Sway(150, -0.5, 2, 0.007),
-                source: new RadialVectorSource(new Phaser.Math.Vector2(200, 200), 250)
+                sway: new Sway(140, -1, 1, 0.007),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(500, -60), 150)
             },
             {
-                sway: new Sway(150, -0.5, 2, 0.006),
-                source: new RadialVectorSource(new Phaser.Math.Vector2(450, -100), 250)
+                sway: new Sway(170, -1, 1, 0.007),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(250, -500), 200)
             },
             {
-                sway: new Sway(150, -0.5, 2, 0.007),
-                source: new RadialVectorSource(new Phaser.Math.Vector2(250, -150), 250)
+                sway: new Sway(120, -0.5, 2, 0.007),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(700, -900), 300)
+            },
+
+            // force into rock ebb and flow
+            {
+                sway: new Sway(120, -0.5, 2, 0.007),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(760, -1500), 200)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.007),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(470, -1550), 250)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.007),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(130, -1550), 200)
+            },
+
+            // intro to waves
+            {
+                sway: new Sway(120, -0.5, 2, 0.007),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(230, -2450), 150)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.007),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(270, -2500), 150)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.007),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(230, -2550), 150)
+            },
+
+            // scattered rocks
+            {
+                sway: new Sway(120, -0.5, 2, 0.006),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(370, -2900), 200)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.0065),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(180, -3100), 200)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.006),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(680, -3050), 200)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.0065),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(640, -3350), 200)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.007),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(440, -3450), 200)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.006),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(200, -3750), 200)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.006),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(360, -3800), 200)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.0065),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(670, -4100), 170)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.0065),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(160, -4200), 200)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.0065),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(670, -4500), 200)
+            },
+            {
+                sway: new Sway(140, -0.5, 2, 0.008),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(120, -4500), 120)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.007),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(420, -4800), 150)
+            },
+            {
+                sway: new Sway(140, -0.5, 2, 0.008),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(230, -4600), 120)
+            },
+
+            // rock path
+
+            {
+                sway: new Sway(120, -0.5, 2, 0.0065),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(150, -5000), 200)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.0065),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(750, -5000), 200)
+            },
+
+            {
+                sway: new Sway(120, -0.5, 2, 0.0065),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(250, -5500), 170)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.0065),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(650, -5500), 170)
+            },
+
+            {
+                sway: new Sway(120, -0.5, 2, 0.006),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(200, -5800), 170)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.006),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(600, -5800), 170)
+            },
+
+            {
+                sway: new Sway(120, -0.5, 2, 0.007),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(100, -6100), 170)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.007),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(500, -6100), 170)
+            },
+
+            {
+                sway: new Sway(120, -0.5, 2, 0.007),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(190, -6400), 170)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.007),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(590, -6400), 170)
+            },
+
+            {
+                sway: new Sway(120, -0.5, 2, 0.006),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(300, -6700), 170)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.006),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(700, -6700), 170)
+            },
+
+            {
+                sway: new Sway(120, -0.5, 2, 0.0065),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(400, -7000), 170)
+            },
+            {
+                sway: new Sway(120, -0.5, 2, 0.0065),
+                source: new RadialVectorSource(new Phaser.Math.Vector2(800, -7000), 170)
             },
 
         ];
@@ -216,6 +366,9 @@ export class World extends Phaser.GameObjects.Container {
                 return wave.active;
             });
         this.forces.update();
+
+        if (!this.spawningWaves && this.player.y < -1800) this.createBigWave();
+        if (this.player.y < -7000) this.canSpawnWaves = false;
 
         const windDirection = this.windForce.source.getDirection(new Phaser.Math.Vector2(0, 0));
         windDirection.scale(this.windForce.sway.getLength());
@@ -339,17 +492,20 @@ export class World extends Phaser.GameObjects.Container {
     }
 
     async createBigWave() {
-        if (!this.active) return;
-        await Interval.seconds(20 + 10 * Math.random());
-        if (!this.active) return;
+        if (!this.active || !this.canSpawnWaves) return;
         const rand = Math.random();
-        if (rand < 0.33) {
+        if (!this.spawningWaves) {
+            this.spawningWaves = true;
+            this.createWaveFromLeft();
+        } else if (rand < 0.33) {
             this.createWaveFromLeft();
         } else if (rand < 0.66) {
             this.createWaveFromRight();
         } else {
             this.createWaveFromTop();
         }
+        await Interval.seconds(9 + 5 * Math.random());
+        if (!this.active || !this.canSpawnWaves) return;
         this.createBigWave();
     }
 
