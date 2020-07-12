@@ -8,6 +8,7 @@ import { RadialVectorSource } from "../vector_source/RadialVectorSource";
 import { Player } from "../actors/Player";
 import { Rock } from "../environment/Rock";
 import { Wave } from "../environment/Wave";
+import { Interval } from "../utils/interval";
 
 
 export class World extends Phaser.GameObjects.Container {
@@ -30,6 +31,8 @@ export class World extends Phaser.GameObjects.Container {
     rainSprite: Phaser.GameObjects.TileSprite;
     rainSprite2: Phaser.GameObjects.TileSprite;
     rainSprite3: Phaser.GameObjects.TileSprite;
+    thunderScreen: Phaser.GameObjects.Sprite;
+
     water: Phaser.GameObjects.TileSprite;
     counter = 0;
 
@@ -42,6 +45,11 @@ export class World extends Phaser.GameObjects.Container {
         const player = new Player(this, 400, 400).moveWith(new InputsMoveEngine());
         this.scene.cameras.main.startFollow(player, true, 0.6);
         player.forces = this.forces;
+        this.thunderScreen = this.scene.add.sprite(0, 0, 'thunder_screen')
+            .setAlpha(0)
+            .setOrigin(0)
+            .setDepth(1000);
+        this.createThunder()
 
         this.windForce = {
             sway: new Sway(180, -1, 1, 0.005),
@@ -213,7 +221,7 @@ export class World extends Phaser.GameObjects.Container {
         this.rainSprite2.setPosition(this.scene.cameras.main.scrollX, this.scene.cameras.main.scrollY);
         this.rainSprite3.setPosition(this.scene.cameras.main.scrollX, this.scene.cameras.main.scrollY);
         this.water.setPosition(this.scene.cameras.main.scrollX, this.scene.cameras.main.scrollY);
-
+        this.thunderScreen.setPosition(this.scene.cameras.main.scrollX, this.scene.cameras.main.scrollY);
 
         this.rocks.forEach(rock => {
             this.waves.forEach(wave => {
@@ -223,6 +231,26 @@ export class World extends Phaser.GameObjects.Container {
                 })
             });
         });
+    }
+
+    async createThunder() {
+        if (!this.active) return;
+        await Interval.seconds(10 + Math.floor(10 * Math.random()));
+        if (!this.active) return;
+        this.scene.add.tween({
+            targets: [this.thunderScreen],
+            repeat: 1,
+            yoyo: true,
+            duration: 70,
+            alpha: {
+                getStart: () => 0,
+                getEnd: () => 1,
+            },
+            onComplete: () => {
+                this.createThunder();
+            },
+        });
+
     }
 
     destroy() {
