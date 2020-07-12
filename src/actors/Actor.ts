@@ -13,6 +13,7 @@ export class Actor extends Phaser.GameObjects.Ellipse {
     forces = new Forces();
 
     speed: number = 160;
+    hasMoved = false;
 
     protected mainContainer: Phaser.GameObjects.Container;
 
@@ -41,6 +42,10 @@ export class Actor extends Phaser.GameObjects.Ellipse {
     update(time: number, delta: number) {
         if (!this.active) return;
         const originalMoveVector = this.getMoveVector();
+        if (originalMoveVector.length() != 0) {
+            this.hasMoved = true;
+        }
+
         const moveVector = originalMoveVector.clone();
 
         this.forces.getForces(new Phaser.Math.Vector2(this.x, this.y)).forEach(force => {

@@ -9,6 +9,7 @@ import { Player } from "../actors/Player";
 import { Rock } from "../environment/Rock";
 import { Wave } from "../environment/Wave";
 import { Interval } from "../utils/interval";
+import { CameraUtils } from "../utils/CameraUtils";
 
 
 export class World extends Phaser.GameObjects.Container {
@@ -43,8 +44,13 @@ export class World extends Phaser.GameObjects.Container {
     leftRockBarrier: Phaser.GameObjects.TileSprite;
     rightRockBarrier: Phaser.GameObjects.TileSprite;
 
+    land: Phaser.GameObjects.Sprite;
+    crashScreen: Phaser.GameObjects.Sprite;
+    controlScreen: Phaser.GameObjects.Sprite;
+
     canSpawnWaves = true;
     spawningWaves = false;
+    hasWon = false;
 
     constructor(public scene: MainScene) {
         super(scene);
@@ -52,14 +58,14 @@ export class World extends Phaser.GameObjects.Container {
         World.worldCount += 1;
         this.registerListeners();
         this.player = new Player(this, 400, 400).moveWith(new InputsMoveEngine());
-        // this.player = new Player(this, 400, -4000).moveWith(new InputsMoveEngine());
+        // this.player = new Player(this, 400, -6500).moveWith(new InputsMoveEngine());
         this.scene.cameras.main.startFollow(this.player, true, 0.6, 0.6, 0, 150);
         this.player.forces = this.forces;
         this.thunderScreen = this.scene.add.sprite(0, 0, 'thunder_screen')
             .setAlpha(0)
             .setOrigin(0)
             .setDepth(1000);
-        this.createThunder()
+        this.createThunder();
 
         this.windForce = {
             sway: new Sway(150, -1, 1, 0.005),
@@ -134,6 +140,23 @@ export class World extends Phaser.GameObjects.Container {
             0xff77aa,
             0.2)
             .setOrigin(0);
+
+        this.land = this.scene.add.sprite(400, -7500, 'land')
+            .setOrigin(0.5, 1);
+
+        this.crashScreen = this.scene.add.sprite(0, 0, 'crash_screen')
+            .setOrigin(0)
+            .setAlpha(0)
+            .setDepth(1000);
+
+        this.controlScreen = this.scene.add.sprite(0, 0, 'controls_screen')
+            .setOrigin(0)
+            .setDepth(1000);
+
+        this.scene.input.keyboard.on('keydown-SPACE', event => {
+            if (!this.player.active)
+                this.scene.scene.restart();
+        });
     }
 
     createRockForces() {
@@ -369,6 +392,9 @@ export class World extends Phaser.GameObjects.Container {
 
         if (!this.spawningWaves && this.player.y < -1800) this.createBigWave();
         if (this.player.y < -7000) this.canSpawnWaves = false;
+        if (this.player.y < -7400 && !this.hasWon) this.onWin();
+
+        if (!this.hasWon && !this.player.active) this.crashScreen.setAlpha(1);
 
         const windDirection = this.windForce.source.getDirection(new Phaser.Math.Vector2(0, 0));
         windDirection.scale(this.windForce.sway.getLength());
@@ -391,6 +417,8 @@ export class World extends Phaser.GameObjects.Container {
         this.rainSprite.setPosition(this.scene.cameras.main.scrollX, this.scene.cameras.main.scrollY);
         this.rainSprite2.setPosition(this.scene.cameras.main.scrollX, this.scene.cameras.main.scrollY);
         this.rainSprite3.setPosition(this.scene.cameras.main.scrollX, this.scene.cameras.main.scrollY);
+        this.crashScreen.setPosition(this.scene.cameras.main.scrollX, this.scene.cameras.main.scrollY);
+        this.controlScreen.setPosition(this.scene.cameras.main.scrollX, this.scene.cameras.main.scrollY);
         this.water.setPosition(this.scene.cameras.main.scrollX, this.scene.cameras.main.scrollY);
         this.thunderScreen.setPosition(this.scene.cameras.main.scrollX, this.scene.cameras.main.scrollY);
 
@@ -427,6 +455,9 @@ export class World extends Phaser.GameObjects.Container {
         if (playerCollision) this.destroyPlayer();
 
         if (this.player.active) {
+
+            if (this.player.hasMoved) this.controlScreen.setAlpha(0);
+
             if (this.player.getCenter().x < this.leftRockBarrier.getRightCenter().x - 50) {
                 this.destroyPlayer();
             } else if (this.player.getCenter().x > this.rightRockBarrier.getLeftCenter().x + 50) {
@@ -537,6 +568,11 @@ export class World extends Phaser.GameObjects.Container {
         }
     }
 
+    async onWin() {
+        await CameraUtils.fadeOut(this.scene.cameras.main, 2500);
+        this.scene.scene.start('ThankYouScene');
+    }
+
     destroy() {
         if (!this.active) return;
         this.scene.getEmitter().removeAllListeners();
@@ -548,6 +584,13 @@ export class World extends Phaser.GameObjects.Container {
         this.rainSprite3.destroy();
         this.thunderScreen.destroy();
         this.water.destroy();
+        this.crashScreen.destroy();
+        this.controlScreen.destroy();
+        this.leftRockBarrierIndicator.destroy();
+        this.rightRockBarrierIndicator.destroy();
+        this.leftRockBarrier.destroy();
+        this.rightRockBarrier.destroy();
+        if (this.player.active) this.player.destroy();
         super.destroy();
     }
 }

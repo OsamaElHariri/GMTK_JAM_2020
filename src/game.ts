@@ -2,6 +2,7 @@ import "phaser";
 import { SetupScene } from "./scenes/SetupScene";
 import { LoadingScene } from "./scenes/LoadingScene";
 import { MainScene } from './scenes/MainScene';
+import { ThankYouScene } from './scenes/ThankYouScene';
 
 const config: Phaser.Types.Core.GameConfig = {
   width: 800,
@@ -14,6 +15,7 @@ const config: Phaser.Types.Core.GameConfig = {
     SetupScene,
     LoadingScene,
     MainScene,
+    ThankYouScene,
   ],
   physics: {
     default: "arcade",
