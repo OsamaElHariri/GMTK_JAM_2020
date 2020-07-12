@@ -12,7 +12,14 @@ export class LoadingScene extends Scene {
     }
 
     private loadAssets() {
-        // this.load.audio('ipsi', '../assets/audio/Ipsi.mp3');
+        // https://freesound.org/people/InspectorJ/sounds/360328/
+        this.load.audio('thunder1', '../assets/audio/360328__inspectorj__thunder-very-close-rain-a.mp3');
+
+        // https://freesound.org/people/Fission9/sounds/465314/
+        this.load.audio('thunder2', '../assets/audio/465314__fission9__thunder.mp3');
+
+        // https://freesound.org/people/SpaceJoe/sounds/505469/
+        this.load.audio('heavy_rain', '../assets/audio/505469__spacejoe__heavy-rain-and-wind.mp3');
 
         this.load.image('boat', '../assets/sprites/boat.png');
         this.load.image('sailors', '../assets/sprites/sailors.png');
@@ -38,6 +45,19 @@ export class LoadingScene extends Scene {
     }
 
     private constructLoadingScrean(): void {
+        this.add.sprite(0, 0, 'loading_screen').setOrigin(0);
+
+        const loader = this.add.sprite(400, 200, 'loader')
+            .setOrigin(0.5);
+        this.add.tween({
+            targets: [loader],
+            duration: 1500,
+            repeat: -1,
+            angle: {
+                getStart: () => 360,
+                getEnd: () => 0,
+            },
+        });
     }
 
     create(): void {

@@ -52,6 +52,8 @@ export class World extends Phaser.GameObjects.Container {
     spawningWaves = false;
     hasWon = false;
 
+    private sound: Phaser.Sound.BaseSound;
+
     constructor(public scene: MainScene) {
         super(scene);
         this.id = scene.addObject(this);
@@ -157,6 +159,11 @@ export class World extends Phaser.GameObjects.Container {
             if (!this.player.active)
                 this.scene.scene.restart();
         });
+
+        this.sound = this.scene.sound.add('heavy_rain', {
+            loop: true,
+        });
+        this.sound.play();
     }
 
     createRockForces() {
@@ -507,6 +514,16 @@ export class World extends Phaser.GameObjects.Container {
         await Interval.seconds(10 + Math.floor(7 * Math.random()));
         if (!this.active) return;
         this.scene.cameras.main.shake(100, 0.03);
+
+        if (Math.random() < 0.5) {
+            this.scene.sound.play('thunder1', {
+                rate: 1.2,
+                volume: 0.8
+            });
+        } else {
+            this.scene.sound.play('thunder2');
+        }
+
         this.scene.add.tween({
             targets: [this.thunderScreen],
             repeat: 1,
@@ -575,6 +592,7 @@ export class World extends Phaser.GameObjects.Container {
 
     destroy() {
         if (!this.active) return;
+        this.sound.destroy();
         this.scene.getEmitter().removeAllListeners();
         this.scene.stopUpdating(this.id);
         this.rocks.forEach(rock => rock.destroy());
