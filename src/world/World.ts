@@ -81,14 +81,6 @@ export class World extends Phaser.GameObjects.Container {
             );
         });
 
-        this.waves.push(
-            new Wave(this, 200, 400, 'wave_flipped', true)
-        );
-
-        this.waves.push(
-            new Wave(this, 300, 300, 'wave', false)
-        );
-
         this.rainSprite = this.scene.add.
             tileSprite(0, 0, this.scene.cameras.main.width, this.scene.cameras.main.height, 'rain_particles')
             .setOrigin(0)
@@ -116,7 +108,7 @@ export class World extends Phaser.GameObjects.Container {
         this.leftRockBarrier = this.scene.add.
             tileSprite(-660, 0, 660, 1200, 'rock_barrier')
             .setOrigin(0)
-            .setDepth(1);
+            .setDepth(20);
         this.leftRockBarrierIndicator = this.scene.add.rectangle(
             this.leftRockBarrier.x,
             this.leftRockBarrier.y,
@@ -127,9 +119,9 @@ export class World extends Phaser.GameObjects.Container {
             .setOrigin(0);
 
         this.rightRockBarrier = this.scene.add.
-            tileSprite(1000, 0, 660, 1200, 'rock_barrier')
+            tileSprite(900, 0, 660, 1200, 'rock_barrier')
             .setOrigin(0)
-            .setDepth(1);
+            .setDepth(20);
         this.rightRockBarrierIndicator = this.scene.add.rectangle(
             this.rightRockBarrier.x + 50,
             this.rightRockBarrier.y,
@@ -138,6 +130,8 @@ export class World extends Phaser.GameObjects.Container {
             0xff77aa,
             0.2)
             .setOrigin(0);
+
+        this.createBigWave();
     }
 
     createRockForces() {
@@ -211,6 +205,16 @@ export class World extends Phaser.GameObjects.Container {
     }
 
     update() {
+        this.waves = this.waves.filter(
+            wave => {
+                if (!wave.active) return false;
+
+                const wavePos = wave.getCenter();
+                if (wavePos.x < this.leftRockBarrierIndicator.getRightCenter().x - 200
+                    || wavePos.x > this.rightRockBarrierIndicator.getLeftCenter().x + 200
+                    || wavePos.distance(this.player.getCenter()) > 1700) this.destroyWave(wave);;
+                return wave.active;
+            });
         this.forces.update();
 
         const windDirection = this.windForce.source.getDirection(new Phaser.Math.Vector2(0, 0));
@@ -248,7 +252,7 @@ export class World extends Phaser.GameObjects.Container {
             this.waves.forEach(wave => {
                 if (!wave.active) return;
                 this.scene.physics.collide(wave, rock, () => {
-                    wave.destroy();
+                    this.destroyWave(wave);
                 })
             });
         });
@@ -257,6 +261,13 @@ export class World extends Phaser.GameObjects.Container {
         this.rocks.forEach(rock => {
             this.scene.physics.collide(this.player, rock, () => {
                 playerCollision = true;
+            })
+        });
+
+        this.waves.forEach(wave => {
+            this.scene.physics.collide(this.player, wave, () => {
+                playerCollision = true;
+                this.destroyWave(wave);
             })
         });
 
@@ -290,7 +301,21 @@ export class World extends Phaser.GameObjects.Container {
             emitZone: { source: new Phaser.Geom.Rectangle(0, 0, 3, 3) }
         });
         this.shipWreck.explode(40, this.player.x, this.player.y);
+    }
 
+    destroyWave(wave: Wave) {
+        const waveSplashManager = this.scene.add.particles('rain_particle');
+        const waveSplash = waveSplashManager.setDepth(10).createEmitter({
+            alpha: { start: 1, end: 0, ease: 'quadratic' },
+            lifespan: 600,
+            speed: 90,
+            rotate: { min: 0, max: 360 },
+            quantity: 20,
+            tint: [0xfafafa, 0xffffff],
+            emitZone: { source: new Phaser.Geom.Rectangle(0, 0, 40, 40) }
+        });
+        waveSplash.explode(40, wave.x, wave.y);
+        wave.destroy();
     }
 
     async createThunder() {
@@ -311,17 +336,62 @@ export class World extends Phaser.GameObjects.Container {
                 this.createThunder();
             },
         });
-
     }
 
-    createBigWave() {
+    async createBigWave() {
+        if (!this.active) return;
+        await Interval.seconds(20 + 10 * Math.random());
+        if (!this.active) return;
+        const rand = Math.random();
+        if (rand < 0.33) {
+            this.createWaveFromLeft();
+        } else if (rand < 0.66) {
+            this.createWaveFromRight();
+        } else {
+            this.createWaveFromTop();
+        }
+        this.createBigWave();
+    }
 
+    createWaveFromLeft() {
+        const yInitial = this.scene.cameras.main.height + this.scene.cameras.main.scrollY + 300;
+        for (let i = 0; i < 20; i++) {
+            this.waves.push(
+                new Wave(this, -100 + 30 * Math.random(), yInitial - i * 160, 'wave_flipped', true)
+            );
+        }
+    }
+
+    createWaveFromRight() {
+        const yInitial = this.scene.cameras.main.height + this.scene.cameras.main.scrollY + 300;
+        for (let i = 0; i < 20; i++) {
+            this.waves.push(
+                new Wave(this, this.rightRockBarrierIndicator.getLeftCenter().x + 30 * Math.random(), yInitial - i * 160, 'wave_flipped', false)
+            );
+        }
+    }
+
+    createWaveFromTop() {
+        const yInitial = this.scene.cameras.main.scrollY - 400
+        const xInitial = this.leftRockBarrierIndicator.getRightCenter().x;
+        for (let i = 0; i < 15; i++) {
+            this.waves.push(
+                new Wave(this, xInitial + i * 160, yInitial + 30 * Math.random(), 'wave', false)
+            );
+        }
     }
 
     destroy() {
         if (!this.active) return;
         this.scene.getEmitter().removeAllListeners();
         this.scene.stopUpdating(this.id);
+        this.rocks.forEach(rock => rock.destroy());
+        this.waves.forEach(wave => wave.destroy());
+        this.rainSprite.destroy();
+        this.rainSprite2.destroy();
+        this.rainSprite3.destroy();
+        this.thunderScreen.destroy();
+        this.water.destroy();
         super.destroy();
     }
 }

@@ -3,7 +3,7 @@ import { World } from "../world/World";
 export class Wave extends Phaser.GameObjects.Sprite {
 
     body: Phaser.Physics.Arcade.Body;
-    waveSpeed = 30;
+    waveSpeed = 80;
 
     constructor(public world: World, public x: number, public y: number, spriteKey: string, forward = true) {
         super(world.scene, x, y, spriteKey);
@@ -11,6 +11,7 @@ export class Wave extends Phaser.GameObjects.Sprite {
         world.scene.addObject(this);
         world.scene.physics.world.enable(this);
         this.body.setAllowGravity(false);
+        this.setDepth(1);
 
         let xVelocity = spriteKey == 'wave_flipped' ? 1 : 0;
         let yVelocity = spriteKey == 'wave' ? -1 : 0;
