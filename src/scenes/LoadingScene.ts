@@ -25,6 +25,8 @@ export class LoadingScene extends Scene {
         this.load.image('ocean_ripple', '../assets/sprites/ocean_ripple.png');
         this.load.image('boat_ripple', '../assets/sprites/boat_ripple.png');
         this.load.image('thunder_screen', '../assets/sprites/thunder_screen.png');
+        this.load.image('rock_barrier', '../assets/sprites/rock_barrier.png');
+        this.load.image('boat_fragment', '../assets/sprites/boat_fragment.png');
 
         // https://www.deviantart.com/berserkitty/art/Seamless-Cartoon-styled-Water-Texture-743787929
         this.load.image('water_texture', '../assets/sprites/water_texture.png');

@@ -8,4 +8,12 @@ export class EmptyMoveEngine implements MoveEngine {
     getVerticalAxis() {
         return 0;
     }
+
+    getHorizontalAxisJustPressed() {
+        return 0;
+    }
+
+    getVerticalAxisJustPressed() {
+        return 0;
+    }
 }

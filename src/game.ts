@@ -10,9 +10,6 @@ const config: Phaser.Types.Core.GameConfig = {
   parent: "game",
   disableContextMenu: true,
   backgroundColor: '#5577EE',
-  dom: {
-    createContainer: true
-  },
   scene: [
     SetupScene,
     LoadingScene,

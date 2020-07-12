@@ -19,7 +19,7 @@ export class Actor extends Phaser.GameObjects.Ellipse {
     protected moveEngine: MoveEngine = new EmptyMoveEngine();
 
     constructor(public world: World, public x: number, public y: number) {
-        super(world.scene, x, y, 40, 40);
+        super(world.scene, x, y, 12, 12);
         this.id = world.scene.addObject(this);
         world.scene.physics.world.enable(this);
         this.body.setAllowGravity(false);
@@ -39,6 +39,7 @@ export class Actor extends Phaser.GameObjects.Ellipse {
     }
 
     update(time: number, delta: number) {
+        if (!this.active) return;
         const originalMoveVector = this.getMoveVector();
         const moveVector = originalMoveVector.clone();
 

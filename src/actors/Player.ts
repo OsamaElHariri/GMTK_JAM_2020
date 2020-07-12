@@ -4,9 +4,9 @@ import { NumberUtils } from "../utils/NumberUtils";
 import { Interval } from "../utils/interval";
 
 export class Player extends Actor {
+    spriteScale = 0.25;
     private counter = 0;
     private oars: Phaser.GameObjects.Sprite[] = [];
-    private spriteScale = 0.25;
     private oarRotationStrength = 0;
     private oarRotationStrengthIncrement = 0.01;
 
@@ -101,6 +101,7 @@ export class Player extends Actor {
     }
 
     update(time, delta) {
+        if (!this.active) return;
         super.update(time, delta);
         this.counter += 1;
 
