@@ -82,7 +82,11 @@ export class World extends Phaser.GameObjects.Container {
         });
 
         this.waves.push(
-            new Wave(this, 200, 400).setScale(0.5)
+            new Wave(this, 200, 400, 'wave_flipped', true)
+        );
+
+        this.waves.push(
+            new Wave(this, 300, 300, 'wave', false)
         );
 
         this.rainSprite = this.scene.add.
@@ -279,9 +283,9 @@ export class World extends Phaser.GameObjects.Container {
             scale: this.player.spriteScale,
             alpha: { start: 1, end: 0, ease: 'quadratic' },
             lifespan: 800,
-            speed: 200,
+            speed: 90,
             rotate: { min: 0, max: 360 },
-            quantity: 40,
+            quantity: 20,
             tint: [0xfafafa, 0xffffff],
             emitZone: { source: new Phaser.Geom.Rectangle(0, 0, 3, 3) }
         });
@@ -307,6 +311,10 @@ export class World extends Phaser.GameObjects.Container {
                 this.createThunder();
             },
         });
+
+    }
+
+    createBigWave() {
 
     }
 

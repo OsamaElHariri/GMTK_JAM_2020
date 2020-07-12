@@ -22,6 +22,7 @@ export class LoadingScene extends Scene {
         this.load.image('rain_particles', '../assets/sprites/rain_particles.png');
         this.load.image('rock_ripple', '../assets/sprites/rock_ripple.png');
         this.load.image('wave', '../assets/sprites/wave.png');
+        this.load.image('wave_flipped', '../assets/sprites/wave_flipped.png');
         this.load.image('ocean_ripple', '../assets/sprites/ocean_ripple.png');
         this.load.image('boat_ripple', '../assets/sprites/boat_ripple.png');
         this.load.image('thunder_screen', '../assets/sprites/thunder_screen.png');

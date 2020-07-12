@@ -14,6 +14,7 @@ export class Rock extends Phaser.GameObjects.Sprite {
 
     constructor(public world: World, public x: number, public y: number, private force: Force) {
         super(world.scene, x, y, 'rock1');
+        this.setRotation(Math.random() * Math.PI * 2)
         world.scene.addObject(this);
         world.scene.physics.world.enable(this);
         this.body.setAllowGravity(false);
