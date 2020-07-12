@@ -61,7 +61,7 @@ export class World extends Phaser.GameObjects.Container {
         this.registerListeners();
         this.player = new Player(this, 400, 400).moveWith(new InputsMoveEngine());
         // this.player = new Player(this, 400, -6500).moveWith(new InputsMoveEngine());
-        this.scene.cameras.main.startFollow(this.player, true, 0.6, 0.6, 0, 150);
+        this.scene.cameras.main.startFollow(this.player, false, 0.5, 0.5, 0, 150);
         this.player.forces = this.forces;
         this.thunderScreen = this.scene.add.sprite(0, 0, 'thunder_screen')
             .setAlpha(0)
